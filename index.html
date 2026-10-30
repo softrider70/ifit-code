@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>iFit Code</title>
+<meta name="theme-color" content="#0b0f14">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="iFit Code">
+<meta name="format-detection" content="telephone=no">
+<link rel="apple-touch-icon" href="ifit-icon.png">
+<link rel="manifest" href="manifest.json">
+<style>
+  :root {
+    --bg: #0b0f14;
+    --card: #151b23;
+    --card-2: #1c242e;
+    --line: #26303b;
+    --text: #e8eef5;
+    --dim: #8394a6;
+    --accent: #4cc2ff;
+    --ok: #37d67a;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    padding: max(16px, env(safe-area-inset-top)) 16px
+             max(24px, env(safe-area-inset-bottom)) 16px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  header { text-align: center; padding: 8px 0 4px; }
+  h1 {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--dim);
+  }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    padding: 18px 18px 16px;
+  }
+  .label {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: .04em;
+    color: var(--dim);
+    margin-bottom: 10px;
+  }
+  input {
+    width: 100%;
+    border: 0;
+    outline: 0;
+    background: var(--card-2);
+    color: var(--text);
+    border-radius: 14px;
+    padding: 18px 16px;
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 30px;
+    font-weight: 600;
+    letter-spacing: .16em;
+    text-align: center;
+    caret-color: var(--accent);
+  }
+  input::placeholder { color: #3d4a58; letter-spacing: .16em; }
+  .hint {
+    margin-top: 10px;
+    font-size: 13px;
+    color: var(--dim);
+    text-align: center;
+    min-height: 18px;
+  }
+  .result {
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 54px;
+    font-weight: 700;
+    letter-spacing: .1em;
+    text-align: center;
+    padding: 8px 0 4px;
+    color: var(--ok);
+    font-variant-numeric: tabular-nums;
+    transition: color .15s ease;
+  }
+  .result.empty { color: #3d4a58; }
+  .copy {
+    display: block;
+    width: 100%;
+    margin-top: 6px;
+    padding: 15px;
+    border: 0;
+    border-radius: 14px;
+    background: var(--accent);
+    color: #04121b;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: .03em;
+  }
+  .copy:active { opacity: .75; }
+  .copy[disabled] { background: var(--card-2); color: var(--dim); }
+  details {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    padding: 0 18px;
+  }
+  summary {
+    padding: 17px 0;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+    cursor: pointer;
+    list-style: none;
+  }
+  summary::-webkit-details-marker { display: none; }
+  summary::after {
+    content: "+";
+    float: right;
+    color: var(--dim);
+    font-weight: 400;
+  }
+  details[open] summary::after { content: "–"; }
+  ol, ul { margin: 0 0 18px; padding-left: 22px; }
+  li { font-size: 15px; line-height: 1.55; color: #cdd8e3; margin-bottom: 9px; }
+  li b { color: #fff; }
+  .note {
+    font-size: 12.5px;
+    line-height: 1.5;
+    color: var(--dim);
+    text-align: center;
+    padding: 0 6px;
+  }
+  .toast {
+    position: fixed;
+    left: 50%;
+    bottom: calc(28px + env(safe-area-inset-bottom));
+    transform: translate(-50%, 12px);
+    background: #23303d;
+    color: #e8eef5;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 11px 20px;
+    border-radius: 30px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .2s, transform .2s;
+  }
+  .toast.show { opacity: 1; transform: translate(-50%, 0); }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>iFit Code</h1>
+</header>
+
+<div class="card">
+  <div class="label">Angezeigte Zahl</div>
+  <input id="challenge" type="text" inputmode="numeric" pattern="[0-9]*"
+         maxlength="6" autocomplete="off" autocorrect="off"
+         spellcheck="false" placeholder="000000" aria-label="Angezeigte Zahl">
+  <div class="hint" id="hint">Die sechsstellige Zahl aus dem Fenster auf der Konsole</div>
+</div>
+
+<div class="card">
+  <div class="label" style="text-align:center">Antwort</div>
+  <div class="result empty" id="result">——————</div>
+  <button class="copy" id="copy" disabled>Kopieren</button>
+</div>
+
+<details>
+  <summary>Ablauf auf der Konsole</summary>
+  <ol>
+    <li>Gerät normal hochfahren und warten, bis das Bild fertig ist.</li>
+    <li>Eine <b>freie Fläche oben links</b> suchen.</li>
+    <li><b>10-mal</b> auf diese Stelle tippen.</li>
+    <li><b>7 Sekunden</b> warten.</li>
+    <li>Dieselbe Stelle <b>nochmals 10-mal</b> tippen.</li>
+    <li>Es erscheint ein Fenster mit einer <b>sechsstelligen Zahl</b>.</li>
+    <li>Zahl hier eingeben, Antwort eintippen.</li>
+  </ol>
+  <ul>
+    <li>Passiert nichts: andere Stelle im freien Bereich probieren.</li>
+    <li>Der Zugang gilt <b>nur bis zum Neustart</b>.</li>
+  </ul>
+</details>
+
+<div class="note">
+  Rechnet offline. Kein Server, keine Übertragung.<br>
+  Antwort = <code>new Random(zahl).nextInt(999999)</code>
+</div>
+
+<div class="toast" id="toast">Kopiert</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var MUL = 0x5DEECE66Dn;
+  var ADD = 0xBn;
+  var MASK = (1n << 48n) - 1n;
+
+  // java.util.Random nachbauen: nur nextInt(bound) wird gebraucht.
+  function nextIntJava(seed, bound) {
+    var state = (BigInt(seed) ^ MUL) & MASK;
+    var b = BigInt(bound);
+
+    function next(bits) {
+      state = (state * MUL + ADD) & MASK;
+      return state >> BigInt(48 - bits);
+    }
+
+    for (;;) {
+      var bits = next(31);
+      var val = bits % b;
+      // Java verwirft Werte, die den Bereich ungleich verteilen wuerden
+      if (bits - val + (b - 1n) < (1n << 31n)) {
+        return val;
+      }
+    }
+  }
+
+  function antwort(zahl) {
+    var roh = String(nextIntJava(zahl, 999999));
+    while (roh.length < 6) { roh = "0" + roh; }
+    return roh;
+  }
+
+  var eingabe = document.getElementById("challenge");
+  var ausgabe = document.getElementById("result");
+  var knopf = document.getElementById("copy");
+  var hinweis = document.getElementById("hint");
+  var meldung = document.getElementById("toast");
+  var aktuell = "";
+
+  function aktualisieren() {
+    var ziffern = eingabe.value.replace(/\D/g, "").slice(0, 6);
+    if (ziffern !== eingabe.value) { eingabe.value = ziffern; }
+
+    if (ziffern.length === 0) {
+      aktuell = "";
+      ausgabe.textContent = "——————";
+      ausgabe.classList.add("empty");
+      knopf.disabled = true;
+      hinweis.textContent = "Die sechsstellige Zahl aus dem Fenster auf der Konsole";
+      return;
+    }
+
+    aktuell = antwort(ziffern);
+    ausgabe.textContent = aktuell;
+    ausgabe.classList.remove("empty");
+    knopf.disabled = false;
+    hinweis.textContent = ziffern.length < 6
+      ? "Bisher " + ziffern.length + " von 6 Ziffern – rechnet schon mit"
+      : "Zahl " + ziffern + " erkannt";
+  }
+
+  function kopieren() {
+    if (!aktuell) { return; }
+    var fertig = function () {
+      meldung.classList.add("show");
+      setTimeout(function () { meldung.classList.remove("show"); }, 1200);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(aktuell).then(fertig, fertig);
+    } else {
+      var feld = document.createElement("textarea");
+      feld.value = aktuell;
+      document.body.appendChild(feld);
+      feld.select();
+      try { document.execCommand("copy"); } catch (e) {}
+      document.body.removeChild(feld);
+      fertig();
+    }
+  }
+
+  eingabe.addEventListener("input", aktualisieren);
+  eingabe.addEventListener("focus", function () { eingabe.select(); });
+  knopf.addEventListener("click", kopieren);
+  aktualisieren();
+})();
+
+// Seite dauerhaft offline verfuegbar machen (braucht https oder localhost)
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", function () {
+    navigator.serviceWorker.register("sw.js").catch(function () {
+      /* ohne Service Worker laeuft die Seite trotzdem */
+    });
+  });
+}
+</script>
+</body>
+</html>

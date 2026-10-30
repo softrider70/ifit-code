@@ -1,0 +1,20 @@
+{
+  "name": "iFit Code",
+  "short_name": "iFit Code",
+  "description": "Antwortcode zum iFit-Privileged-Mode aus der angezeigten Zahl berechnen.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0b0f14",
+  "theme_color": "#0b0f14",
+  "lang": "de",
+  "icons": [
+    {
+      "src": "./ifit-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
