@@ -14,17 +14,24 @@ Beispiel: `123456` → `382410`
 
 ## Benutzung
 
-1. Seite öffnen (oder vom Home-Bildschirm starten)
+1. Seite öffnen: `https://BENUTZERNAME.github.io/ifit-code/`
+   (oder vom Home-Bildschirm starten)
 2. Die Zahl von der Konsole eintippen
 3. Die angezeigte Antwort auf der Konsole eintippen
+
+Ohne Netz lässt sich `index.html` auch direkt doppelklicken. Die Rechnung
+läuft dann ebenso, nur Installieren und Offline-Cache entfallen.
 
 Die Seite rechnet lokal im Browser. Kein Server, keine Übertragung, keine
 Speicherung.
 
+Die Adresse wird von GitHub Pages aus dem Branch `main` ausgeliefert; nach
+einem Push dauert es etwa eine Minute, bis die neue Fassung online ist.
+
 ## Aufs Telefon legen
 
-- **iPhone:** in Safari öffnen → Teilen → *Zum Home-Bildschirm*
-- **Android:** in Chrome öffnen → Menü → *Zum Startbildschirm hinzufügen*
+- **iPhone:** die Adresse von oben in Safari öffnen → Teilen → *Zum Home-Bildschirm*
+- **Android:** die Adresse von oben in Chrome öffnen → Menü → *Zum Startbildschirm hinzufügen*
 
 Nach dem ersten Aufruf liegt die Seite im Cache und startet auch ohne Netz.
 
