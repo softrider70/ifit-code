@@ -50,11 +50,25 @@ def bedienoberflaeche():
     import clipboard
     import ui
 
-    rand = 16
+    rand = 18
+    # Kurze Bildschirmkante = Breite im Hochformat, auch bei Querlage.
+    schirm = ui.get_screen_size()
+    breite = min(schirm[0], schirm[1])
+
+    # Senkrechte Masse: (Hoehe, Abstand danach)
+    masse = (
+        (18, 14),
+        (68, 16),
+        (62, 18),
+        (50, 14),
+        (44, 0),
+    )
+    hoehe = rand + sum(h + a for h, a in masse) + rand
 
     view = ui.View(background_color="#0b0f14")
     view.name = "iFit Code"
-    view.frame = (0, 0, 320, 300)
+    view.frame = (0, 0, breite, hoehe)
+    view.corner_radius = 14
 
     titel = ui.Label(
         text="IFIT CODE",
@@ -64,6 +78,7 @@ def bedienoberflaeche():
     )
 
     feld = ui.TextField(background_color="#151b23")
+    feld.text = ""
     feld.placeholder = "sechsstellige Zahl"
     feld.keyboard_type = ui.KEYBOARD_NUMBER_PAD
     feld.alignment = ui.ALIGN_CENTER
@@ -102,8 +117,8 @@ def bedienoberflaeche():
     stand = {"code": ""}
 
     def rechnen(sender=None):
-        ziffern = nur_ziffern(feld.text)[:6]
-        if ziffern != feld.text:
+        ziffern = nur_ziffern(feld.text or "")[:6]
+        if ziffern != (feld.text or ""):
             feld.text = ziffern
 
         if not ziffern:
@@ -152,20 +167,17 @@ def bedienoberflaeche():
     view.add_subview(knopf)
     view.add_subview(hinweis)
 
+    elemente = (titel, feld, ergebnis, knopf, hinweis)
+
     def layout():
-        breite = view.width - 2 * rand
-        y = 16
-        titel.frame = (rand, y, breite, 20)
-        y += 32
-        feld.frame = (rand, y, breite, 64)
-        y += 74
-        ergebnis.frame = (rand, y, breite, 56)
-        y += 66
-        knopf.frame = (rand, y, breite, 46)
-        y += 56
-        hinweis.frame = (rand, y, breite, 40)
+        breite_innen = view.width - 2 * rand
+        y = rand
+        for element, (h, abstand) in zip(elemente, masse):
+            element.frame = (rand, y, breite_innen, h)
+            y += h + abstand
 
     view.layout = layout
+    layout()
     view.present("sheet")
 
 
