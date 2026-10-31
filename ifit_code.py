@@ -46,9 +46,52 @@ def _ist_pythonista():
     return "pythonista" in sys.executable.lower() or sys.platform == "ios"
 
 
+HELL = {
+    "hintergrund": "#f2f2f7",
+    "feld": "#ffffff",
+    "feld_rahmen": "#d1d1d6",
+    "text": "#1c1c1e",
+    "neben": "#5f6470",
+    "leer": "#8a95a3",
+    "akzent": "#0a6ea8",
+    "akzent_text": "#ffffff",
+    "ok": "#0e7a3c",
+}
+
+DUNKEL = {
+    "hintergrund": "#0b0f14",
+    "feld": "#1c242e",
+    "feld_rahmen": "#33404e",
+    "text": "#e8eef5",
+    "neben": "#93a2b3",
+    "leer": "#66748a",
+    "akzent": "#4cc2ff",
+    "akzent_text": "#04121b",
+    "ok": "#37d67a",
+}
+
+
+def _system_ist_hell():
+    """Erscheinungsbild des Geraets erfragen; dunkel ist der Rueckfall."""
+    try:
+        from objc_util import ObjCClass
+    except ImportError:
+        return False
+    try:
+        app = ObjCClass("UIApplication").sharedApplication()
+        fenster = app.keyWindow()
+        if fenster is None:
+            fenster = app.windows().objectAtIndex_(0)
+        return fenster.traitCollection().userInterfaceStyle() == 1
+    except Exception:
+        return False
+
+
 def bedienoberflaeche():
     import clipboard
     import ui
+
+    farbe = HELL if _system_ist_hell() else DUNKEL
 
     rand = 18
     # Kurze Bildschirmkante = Breite im Hochformat, auch bei Querlage.
@@ -65,7 +108,7 @@ def bedienoberflaeche():
     )
     hoehe = rand + sum(h + a for h, a in masse) + rand
 
-    view = ui.View(background_color="#0b0f14")
+    view = ui.View(background_color=farbe["hintergrund"])
     view.name = "iFit Code"
     view.frame = (0, 0, breite, hoehe)
     view.corner_radius = 14
@@ -73,34 +116,34 @@ def bedienoberflaeche():
     titel = ui.Label(
         text="IFIT CODE",
         alignment=ui.ALIGN_CENTER,
-        text_color="#8394a6",
+        text_color=farbe["neben"],
         font=("Menlo-Bold", 13),
     )
 
-    feld = ui.TextField(background_color="#151b23")
+    feld = ui.TextField(background_color=farbe["feld"])
     feld.text = ""
     feld.placeholder = "sechsstellige Zahl"
     feld.keyboard_type = ui.KEYBOARD_NUMBER_PAD
     feld.alignment = ui.ALIGN_CENTER
     feld.font = ("Menlo", 32)
-    feld.text_color = "#e8eef5"
-    feld.tint_color = "#4cc2ff"
+    feld.text_color = farbe["text"]
+    feld.tint_color = farbe["akzent"]
     feld.border_width = 1
-    feld.border_color = "#26303b"
+    feld.border_color = farbe["feld_rahmen"]
     feld.corner_radius = 12
     feld.clear_button_mode = "while_editing"
 
     ergebnis = ui.Label(
         text="------",
         alignment=ui.ALIGN_CENTER,
-        text_color="#4a5866",
+        text_color=farbe["leer"],
         font=("Menlo-Bold", 40),
     )
 
     knopf = ui.Button(
         title="Kopieren",
-        background_color="#1c242e",
-        tint_color="#4cc2ff",
+        background_color=farbe["feld"],
+        tint_color=farbe["leer"],
         corner_radius=12,
     )
     knopf.font = ("Menlo-Bold", 15)
@@ -110,11 +153,16 @@ def bedienoberflaeche():
         text="Die sechsstellige Zahl aus dem Fenster auf der Konsole",
         alignment=ui.ALIGN_CENTER,
         number_of_lines=2,
-        text_color="#8394a6",
-        font=("Menlo", 11),
+        text_color=farbe["neben"],
+        font=("Menlo", 13),
     )
 
     stand = {"code": ""}
+
+    def knopf_an(an):
+        knopf.enabled = an
+        knopf.background_color = farbe["akzent"] if an else farbe["feld"]
+        knopf.tint_color = farbe["akzent_text"] if an else farbe["leer"]
 
     def rechnen(sender=None):
         ziffern = nur_ziffern(feld.text or "")[:6]
@@ -124,16 +172,16 @@ def bedienoberflaeche():
         if not ziffern:
             stand["code"] = ""
             ergebnis.text = "------"
-            ergebnis.text_color = "#4a5866"
-            knopf.enabled = False
+            ergebnis.text_color = farbe["leer"]
+            knopf_an(False)
             knopf.title = "Kopieren"
             hinweis.text = "Die sechsstellige Zahl aus dem Fenster auf der Konsole"
             return
 
         stand["code"] = antwort(ziffern)
         ergebnis.text = stand["code"]
-        ergebnis.text_color = "#e8eef5"
-        knopf.enabled = True
+        ergebnis.text_color = farbe["ok"]
+        knopf_an(True)
         knopf.title = "Kopieren"
         hinweis.text = (
             "Zahl %s erkannt" % ziffern

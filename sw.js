@@ -3,7 +3,7 @@
  * Voraussetzung: https (GitHub Pages) oder localhost.
  */
 
-var CACHE = "ifit-code-v1";
+var CACHE = "ifit-code-v2";
 var DATEIEN = [
   "./index.html",
   "./ifit-icon.png",

@@ -25,6 +25,8 @@ läuft dann ebenso, nur Installieren und Offline-Cache entfallen.
 Die Seite rechnet lokal im Browser. Kein Server, keine Übertragung, keine
 Speicherung.
 
+Hell und dunkel folgt der Systemeinstellung des Geräts.
+
 Die Adresse wird von GitHub Pages aus dem Branch `main` ausgeliefert; nach
 einem Push dauert es etwa eine Minute, bis die neue Fassung online ist.
 
@@ -44,7 +46,8 @@ Dieselbe Rechnung als Python-Skript: `ifit_code.py`.
 3. Im Pythonista-Dateibrowser antippen
 
 Es öffnet sich ein Fenster: Zahl eintippen, die Antwort erscheint sofort,
-*Kopieren* legt sie in die Zwischenablage.
+*Kopieren* legt sie in die Zwischenablage. Hell und dunkel folgt ebenfalls der
+Systemeinstellung; das Farbschema wird beim Start einmal abgefragt.
 
 Im Terminal rechnet dasselbe Skript auch ohne Pythonista:
 
