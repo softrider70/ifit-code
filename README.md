@@ -35,6 +35,26 @@ einem Push dauert es etwa eine Minute, bis die neue Fassung online ist.
 
 Nach dem ersten Aufruf liegt die Seite im Cache und startet auch ohne Netz.
 
+## Pythonista (iPhone/iPad)
+
+Dieselbe Rechnung als Python-Skript: `ifit_code.py`.
+
+1. Pythonista aus dem App Store installieren
+2. `ifit_code.py` in den Pythonista-Ordner legen (über *Dateien* oder AirDrop)
+3. Im Pythonista-Dateibrowser antippen
+
+Es öffnet sich ein Fenster: Zahl eintippen, die Antwort erscheint sofort,
+*Kopieren* legt sie in die Zwischenablage.
+
+Im Terminal rechnet dasselbe Skript auch ohne Pythonista:
+
+```
+python3 ifit_code.py 123456      # gibt 382410 aus
+python3 ifit_code.py             # fragt nach der Zahl
+```
+
+Die Rechnung ist mit der Webseite abgeglichen und liefert dieselben Antworten.
+
 ## Ablauf auf der Konsole
 
 1. Gerät normal hochfahren, bis das Bild fertig ist
@@ -54,6 +74,7 @@ Der Zugang gilt nur bis zum nächsten Neustart.
 | `ifit-icon.png` | Symbol für den Home-Bildschirm |
 | `manifest.json` | macht die Seite installierbar |
 | `sw.js` | Service Worker, legt die Seite offline ab |
+| `ifit_code.py` | dasselbe als Python-Skript für Pythonista und Terminal |
 
 ## Hintergrund
 
